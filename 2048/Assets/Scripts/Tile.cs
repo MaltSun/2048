@@ -1,5 +1,7 @@
-
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;  // This is for TextMeshPro
+
 
 public class Tile : MonoBehaviour
 {
@@ -7,4 +9,23 @@ public class Tile : MonoBehaviour
     public TileCell cell { get; private set; }
 
     public int number {get; private set;}
+
+    private Image background;
+    private TextMeshProUGUI text;
+
+      private void Awake()
+    {
+        background = GetComponent<Image>();
+        text = GetComponentInChildren<TextMeshProUGUI>();
+    }
+
+     public void SetState(TileState state)
+    {
+        this.state = state;
+        
+
+        background.color = state.backgroundColor;
+        text.color = state.textColor;
+        text.text = state.number.ToString();
+    }
 }
