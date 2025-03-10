@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class TileBoard : MonoBehaviour
 {
-    public GameManager GameManager;
-    public Tile tilePrefab;
-    public TileState[] tileStates;
+    [SerializeField] private Tile tilePrefab;
+    [SerializeField] private TileState[] tileStates;
 
     private TileGrid grid;
     private List<Tile> tiles;
-
     private bool waiting;
-    
 
     private void Awake()
     {
@@ -34,10 +31,9 @@ public class TileBoard : MonoBehaviour
     }
 
     public void CreateTile()
-    {        
+    {
         Tile tile = Instantiate(tilePrefab, grid.transform);
-        tile.SetState(tileStates[0], 2);
-
+        tile.SetState(tileStates[0]);
         tile.Spawn(grid.GetRandomEmptyCell());
         tiles.Add(tile);
     }
@@ -87,17 +83,11 @@ public class TileBoard : MonoBehaviour
         {
             if (adjacent.Occupied)
             {
-               if (CanMerge(tile, adjacent.tile))
-{
-    if (tile == null || adjacent.tile == null)
-    {
-        Debug.LogError("Ошибка: один из тайлов в MergeTiles() равен null!");
-        return false;
-    }
-    MergeTiles(tile, adjacent.tile);
-    return true;
-}
-
+                if (CanMerge(tile, adjacent.tile))
+                {
+                    MergeTiles(tile, adjacent.tile);
+                    return true;
+                }
 
                 break;
             }
@@ -116,11 +106,9 @@ public class TileBoard : MonoBehaviour
     }
 
     private bool CanMerge(Tile a, Tile b)
-{
-    if (a == null || b == null) return false;
-    return a.state == b.state && !b.locked;
-}
-
+    {
+        return a.state == b.state && !b.locked;
+    }
 
     private void MergeTiles(Tile a, Tile b)
     {
@@ -128,15 +116,10 @@ public class TileBoard : MonoBehaviour
         a.Merge(b.cell);
 
         int index = Mathf.Clamp(IndexOf(b.state) + 1, 0, tileStates.Length - 1);
-       int number = b.number* 2;
+        TileState newState = tileStates[index];
 
-       b.SetState(tileStates[index],  number);
-
-       GameManager.IncreaseScore(number);
-
-        //  TileState newState = tileStates[index];       
-        //  b.SetState(newState);
-        //  GameManager.Instance.IncreaseScore(newState.number);
+        b.SetState(newState);
+        GameManager.Instance.IncreaseScore(newState.number);
     }
 
     private int IndexOf(TileState state)
@@ -172,7 +155,7 @@ public class TileBoard : MonoBehaviour
         }
     }
 
-     public bool CheckForGameOver()
+    public bool CheckForGameOver()
     {
         if (tiles.Count != grid.Size) {
             return false;
@@ -204,4 +187,5 @@ public class TileBoard : MonoBehaviour
 
         return true;
     }
+
 }
